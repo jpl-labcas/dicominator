@@ -1,17 +1,17 @@
-# CDST Website Imaging
-# ====================
+# Imaging
+# =======
 #
-# This workflow builds and registers images of Data Science website.
+# This workflow builds and registers images of the Dicominator
 
 ---
 
-name: Data Science Website Imaging
+name: Dicominator Imaging
 
 
 # Triggers
 # --------
 #
-# Run on any push to the docker or src
+# Run on any push to the docker or src, etc.
 
 on:
     push:
@@ -20,7 +20,6 @@ on:
         paths:
             -   'docker/**'
             -   'src/**'
-            -   'requirements.txt'
             -   '.dockerignore'
 
 
@@ -31,7 +30,7 @@ on:
 
 jobs:
     imaging:
-        name: 🏞 Data Science Website Imaging
+        name: 📜 Dicominator app imaging
         runs-on: ubuntu-latest
         steps:
             -
@@ -43,6 +42,18 @@ jobs:
             -
                 name: 📚 Repository Checkout
                 uses: actions/checkout@v3
+            -
+                name: 🐍 Python Wrangling
+                uses: actions/setup-python@v4
+                with:
+                    python-version: '3.11'
+            -
+                name: ☸️ Wheel Generation
+                run: |
+                    python -m pip install --quiet --upgrade pip setuptools wheel build
+                    for pkg in src/*; do
+                        python -m build --outdir dist $pkg
+                    done
             -
                 name: 🎰 QEMU Multiple Machine Emulation
                 uses: docker/setup-qemu-action@v2
