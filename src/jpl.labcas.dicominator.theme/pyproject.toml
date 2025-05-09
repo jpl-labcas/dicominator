@@ -1,0 +1,47 @@
+[project]
+name = 'jpl.labcas.dicominator.theme'
+dynamic = ['version']
+requires-python = '>=3.11'
+dependencies = [
+    'django < 5',
+    'wagtail < 6',
+    'wagtailmenus ~= 3.1.5'
+]
+authors = [
+    {name = 'Ashish Mahabal', email='aam@astro.caltech.edu'},
+    {name = 'Sean Kelly', email='kelly@seankelly.biz'}
+]
+description = 'Theme (look and feel) for the JPL LabCAS Dicominator'
+readme = 'README.md'
+keywords = ['labcas', 'dicom', 'census', 'headers', 'tags', 'jpl', 'cancer', 'bioinformatics', 'theme', 'web', 'css']
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Healthcare Industry',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: Apache Software License',
+    'Natural Language :: English',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+]
+license = {file = 'LICENSE.md'}
+
+
+[project.urls]
+Homepage = 'https://github.com/jpl-labcas/dicominator'
+Issues = 'https://github.com/jpl-labcas/dicominator/issues'
+
+[project.scripts]
+# None at this time
+
+[tool.hatch.version]
+path = 'src/jpl/labcas/dicominator/theme/VERSION.txt'
+pattern = '(?P<version>.+)'
+
+
+[tool.hatch.build.targets.wheel]
+packages = ['src/jpl']
+
+
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'

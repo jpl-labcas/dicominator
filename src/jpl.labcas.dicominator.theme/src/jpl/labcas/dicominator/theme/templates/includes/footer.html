@@ -1,0 +1,43 @@
+{% load static menu_tags cache jpl_theme_tags %}
+<footer class='jpl-portal-footer' id='site-footer'>
+    <section class='sitemap pt-3 pb-4'>
+        <div class='row ps-5 pe-5'>
+            <div class='col'>
+                <div class='footer-menu-heading'>Contact</div>
+                <ul class='nav flex-column'>
+                    <li class='nav-item mb-2'>
+                        <a class='nav-link p-0 text-light' href='mailto:ic-data@jpl.nasa.gov'>Contact Us</a>
+                    </li>
+                    <li class='nav-item mb-2'>
+                        <a class='nav-link p-0 text-light' href='https://www.jpl.nasa.gov/who-we-are/media-information/jpl-media-contacts'>JPL Media Contacts</a>
+                    </li>
+                </ul>
+            </div>
+            {% jpl_footer_menus %}
+        </div>
+    </section>
+    <div class='gradient-line'></div>
+    <section class='lower-footer'>
+        <div class='row pt-3'>
+            <ul class='nav justify-content-center list-inline'>
+                <li class='nav-item list-inline-item footer-inline-item'>
+                    <a href='https://www.nasa.gov/' class='nav-link px-2 text-light'>NASA</a>
+                </li>
+                <li class='nav-item list-inline-item footer-inline-item'>
+                    <a href='https://www.caltech.edu/' class='nav-link px-2 text-light'>Caltech</a>
+                </li>
+                <li class='nav-item list-inline-item footer-inline-item'>
+                    <a href='https://www.jpl.nasa.gov/privacy/' class='nav-link px-2 text-light'>Privacy</a>
+                </li>
+                <li class='nav-item list-inline-item footer-inline-item'>
+                    <a href='https://www.jpl.nasa.gov/imagepolicy/' class='nav-link px-2 text-light'>Image Policy</a>
+                </li>
+                {% login_link %}
+            </ul>
+        </div>
+        <div class='row pb-3'>
+            {% jpl_colophon_byline %}
+        </div>
+    </section>
+</footer>
+{# -*- HTML (Jinja) -*- #}

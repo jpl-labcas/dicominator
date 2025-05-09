@@ -1,0 +1,49 @@
+{% load menu_tags wagtailcore_tags static cache jpl_theme_tags %}
+{% wagtail_site as current_site %}
+{# 🔮 TODO: caching #}
+<header>
+    <div class='navbar-brand'>
+        <div class='jpl-caltech'>
+            <a class='nasa-logo' href='https://www.nasa.gov/' title='NASA'>
+                <span class='visually-hidden'>NASA</span>
+            </a>
+            <div class='jpl-logo'>
+                <a id='jpl-logo' href='https://www.jpl.nasa.gov/' title='Jet Propulsion Laboratory'>
+                    <span class='visually-hidden'>Jet Propulsion Labortoary</span>
+                </a>
+            </div>
+            <div class='caltech-logo'>
+                <a id='caltech-logo' href='https://www.caltech.edu/' title='California Institute of Technology'>
+                    <span class='visually-hidden'>California Institute of Technology</span>
+                </a>
+            </div>
+        </div>
+        <a class='site-home-page' href='{{current_site.root_page.url}}' title='{{current_site.root_page.title}}'>
+            <h1>{{current_site.root_page.title}}</h1>
+        </a>
+    </div>
+</header>
+{% comment %} For future use
+<nav class='navbar navbar-expand-lg navbar jpl-navbar'>
+    <div class='container'>
+        <a class='navbar-brand' href='{{current_site.root_page.url}}'>Home</a>
+        <button class='navbar-toggler' type='button' data-bs-toggle='collapse'
+            data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent'
+            aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
+        <div class='collapse navbar-collapse' id='navbarSupportedContent'
+            data-hover='dropdown' data-animations='fadeInDown'>
+            {% main_menu add_sub_menus_inline=False apply_active_classes=True template='theme/menus/main_menu.html' %}
+            <form class='d-flex' action='{% url "search" %}' method='GET'>
+                <label for='query' class='visually-hidden'>Search</label>
+                <input class='form-control me-2' name='query' type='search' placeholder='search' aria-label='Search'
+                    aria-required='true'>
+                <button class='btn btn-outline-light' type='submit'><i class='bi bi-search'></i><span
+                    class='visually-hidden-focusable'>Search</span></button>
+            </form>
+        </div>
+    </div>
+</nav>
+{% endcomment %}
+{# -*- HTML (Jinja) -*- #}

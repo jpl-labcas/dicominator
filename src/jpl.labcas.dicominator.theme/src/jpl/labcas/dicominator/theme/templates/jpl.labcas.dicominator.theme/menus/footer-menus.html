@@ -1,0 +1,7 @@
+{% load menu_tags jpl_theme_tags %}
+{% for menu in menus %}
+    <div class='col'>
+        {% request_restoring_flat_menu original_context=original_context handle=menu.handle template='jpl.labcas.dicominator.theme/menus/footer_menu.html' %}
+    </div>
+{% endfor %}
+{# -*- HTML (Jinja) -*- #}

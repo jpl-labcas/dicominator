@@ -1,0 +1,24 @@
+{
+   "folders" : [
+      {
+         "file_exclude_patterns" : [
+            ".*.cfg",
+            "*.sublime-*",
+            "*.log"
+         ],
+         "folder_exclude_patterns" : [
+            "bin",
+            ".task",
+            "dist",
+            "./media",
+            "./static",
+            "var",
+            "*.egg-info",
+            "python*",
+            ".venv",
+            "venv"
+         ],
+         "path" : "."
+      }
+   ]
+}

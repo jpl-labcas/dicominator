@@ -1,0 +1,8 @@
+<li class='nav-item list-inline-item footer-inline-item'>
+    {% if authenticated %}
+        <a href='{{logout}}' class='nav-link px-2 text-light'>Log out</a>
+    {% else %}
+        <a href='{{login}}' class='nav-link px-2 text-light'>Log in</a>
+    {% endif %}
+</li>
+{# -*- HTML (Jinja) -*- #}

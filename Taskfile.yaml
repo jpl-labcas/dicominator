@@ -1,0 +1,136 @@
+# Taskfile
+# ========
+#
+# Convenient things to run. Depends on https://taskfile.dev/
+
+---
+
+env:
+    DATABASE_URL: "postgresql://:@/dicominator"
+    DATA_DIR: "{{.HOME}}/dockerdata/dicominator"
+    LDAP_BIND_PASSWORD: "{{.edrn_service_password}}"
+    LDAP_URI: "ldaps://localhost:1636"
+    port: 6468
+    python: "python3.11"
+    HTTPS_PORT: 9999
+
+tasks:
+    clean:
+        desc: "Python virtual environment destruction"
+        summary: "Completely removes the Python venv."
+        preconditions:
+            -   test -d .venv
+        cmds:
+            -   rm -rf .venv
+
+    venv:
+        desc: "Python virtual environment"
+        summary: "Creates the Python venv running `pip install` on each src component."
+        sources:
+            -   Taskfile.yaml
+        generates:
+            -   .venv/**
+        cmds:
+            -   "rm -rf .venv"
+            -   "{{.python}} -m venv .venv"
+            # Curiously, we get different behavior between `python -m pip install` and `pip install`.
+            # The former doesn't install packages' scripts, but the latter does. We need the scripts.
+            -   ".venv/bin/pip install --quiet --upgrade setuptools pip wheel build"
+            -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.theme[dev]'"
+            -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.content[dev]'"
+            -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.policy[dev]'"
+            # -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.tags[dev]'"
+            # -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.theme[dev]'"
+    manage:
+        desc: "Local Django admin"
+        summary: >
+            Run Django admin with a command=value command, defaults to shell_plus. For example, to do update
+            the index, run `task manage command=wagtail_update_index`. For command-specific arguments, pass
+            them after `--`. For example: `task manage command=ping_google -- https://my.com/sitemap.xml`.
+        deps: [venv]
+        aliases: [shell]
+        silent: true
+        interactive: true
+        vars:
+            command: "{{.command | default \"shell_plus\"}}"
+        cmds:
+            -   .venv/bin/django-admin {{.command}} --settings local --pythonpath . {{.CLI_ARGS}}
+
+    run:
+        desc: "Local Django server"
+        summary: >
+            Run the Django lightweight web server for development and serving of static files. The
+            port is {{.port}} and can be overriden: `task run port=1234`.
+        aliases: [default]
+        deps: [venv]
+        # I thought we could use "task:" here to have one task call the "manage" task, but it doesn't
+        # work at all.
+        silent: true
+        interactive: true
+        cmds:
+            -   .venv/bin/django-admin runserver --settings local --pythonpath . {{.port}}
+
+    image:
+        desc: "Docker image construction"
+        summary: >
+            Build the dependent wheels and the Docker image. To skip the wheels, do
+            `task image wheels=false`
+        interactive: false
+        vars:
+            wheels: "{{.wheels | default \"true\"}}"
+        cmds:
+            -   "{{.wheels}} -eq true && support/build-wheels.sh || true"
+            -   docker buildx build --build-arg userid=500 --tag edrndocker/dicominator:latest --file docker/Dockerfile --load .
+
+    comp-portal-exec:
+        desc: "Docker foreground composition interactive exec in portal"
+        summary: "For when you need a handy shell inside the portal container in a running Docker composition."
+        interactive: true
+        env:
+            ALLOWED_HOSTS: "*"
+            CERT_CN: "dev.dev"
+            EDRN_VERSION: "latest"
+            LDAP_URI: "ldaps://host.docker.internal:1636"
+            POSTGRES_PASSWORD: "s3cr3t"
+            SECURE_COOKIES: "False"
+            SIGNING_KEY: "s3cret"
+        cmds:
+            -   docker compose --project-name dicominator --file docker/docker-compose.yaml exec portal sh
+
+    comp-portal-restart:
+        desc: "Docker foreground composition restart portal"
+        summary: "In a running Docker composition, this restarts the portal service only."
+        interactive: false
+        env:
+            ALLOWED_HOSTS: "*"
+            CERT_CN: "dev.dev"
+            EDRN_VERSION: "latest"
+            LDAP_URI: "ldaps://host.docker.internal:1636"
+            POSTGRES_PASSWORD: "s3cr3t"
+            SECURE_COOKIES: "False"
+            SIGNING_KEY: "s3cret"
+        cmds:
+            -   docker compose --project-name dicominator --file docker/docker-compose.yaml restart portal
+
+    comp-up:
+        desc: "Docker foreground composition running"
+        summary: "Starts the Docker composition by bringing it `up` in the foreground."
+        interactive: false
+        env:
+            ALLOWED_HOSTS: "*"
+            CERT_CN: "dev.dev"
+            EDRN_VERSION: "latest"
+            LDAP_URI: "ldaps://host.docker.internal:1636"
+            POSTGRES_PASSWORD: "s3cr3t"
+            SECURE_COOKIES: "False"
+            SIGNING_KEY: "s3cret"
+        cmds:
+            -   docker compose --project-name dicominator --file docker/docker-compose.yaml up --remove-orphans 
+
+
+dotenv: ['env', '{{.HOME}}/.secrets/passwords.sh']
+version: '3'
+
+...
+
+# -*- mode: YAML; tab-width: 4 -*-
