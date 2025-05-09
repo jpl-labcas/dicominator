@@ -8,7 +8,7 @@
 # Services
 # --------
 #
-# The following services collectively enable the BioKey application.
+# The following services collectively enable the Dicominator application.
 
 services:
     # Database

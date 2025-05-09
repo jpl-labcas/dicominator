@@ -1,1 +1,1 @@
-/* data science javascripts */
+/* JPL javascripts */

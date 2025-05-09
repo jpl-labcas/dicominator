@@ -27,7 +27,7 @@ class Command(BaseCommand):
         parser.add_argument('--ldap-uri', help='URI of EDRN LDAP (default: %(default)s)', default=self._ldap_uri)
 
     def set_site(self, hostname: str, port: int):
-        '''Set up the Wagtail `Site` object for BioKey.'''
+        '''Set up the Wagtail `Site` object for the Dicominator.'''
 
         self.stdout.write('Setting up Wagtail "Site" object')
         site = Site.objects.filter(is_default_site=True).first()
