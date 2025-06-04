@@ -59,5 +59,5 @@ class FlexPage(Page):
     ]
 
     class Meta:
-        verbose_name = 'web page'
-        verbose_name_plural = 'web pages'
+        verbose_name = 'flex page'
+        verbose_name_plural = 'flex pages'
