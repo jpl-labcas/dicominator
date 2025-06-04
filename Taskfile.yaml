@@ -82,9 +82,11 @@ tasks:
             -   "{{.wheels}} -eq true && support/build-wheels.sh || true"
             -   docker buildx build --build-arg userid=500 --tag edrndocker/dicominator:latest --file docker/Dockerfile --load .
 
-    comp-portal-exec:
-        desc: "Docker foreground composition interactive exec in portal"
-        summary: "For when you need a handy shell inside the portal container in a running Docker composition."
+    comp-app-exec:
+        desc: "Run an interactive exec in the portal app in a running Docker composition"
+        summary: >
+            For when you need a handy exec inside the portal `app` container in a running Docker composition.
+            Pass command-line arguments after `--`. If you don't pass any, you get a shell instead.
         interactive: true
         env:
             ALLOWED_HOSTS: "*"
@@ -95,11 +97,11 @@ tasks:
             SECURE_COOKIES: "False"
             SIGNING_KEY: "s3cret"
         cmds:
-            -   docker compose --project-name dicominator --file docker/docker-compose.yaml exec portal sh
+            -   docker compose --project-name dicominator --file docker/docker-compose.yaml exec app {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}sh{{end}}
 
-    comp-portal-restart:
-        desc: "Docker foreground composition restart portal"
-        summary: "In a running Docker composition, this restarts the portal service only."
+    comp-app-restart:
+        desc: "Docker foreground composition restart app"
+        summary: "In a running Docker composition, this restarts the portal `app` service only."
         interactive: false
         env:
             ALLOWED_HOSTS: "*"
@@ -110,7 +112,7 @@ tasks:
             SECURE_COOKIES: "False"
             SIGNING_KEY: "s3cret"
         cmds:
-            -   docker compose --project-name dicominator --file docker/docker-compose.yaml restart portal
+            -   docker compose --project-name dicominator --file docker/docker-compose.yaml restart app
 
     comp-up:
         desc: "Docker foreground composition running"
