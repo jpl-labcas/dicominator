@@ -23,7 +23,7 @@ compose down --remove-orphans --volumes
 
 compose run --rm --volume ${PWD}/docker-data:/mnt --no-TTY --entrypoint /bin/rm db -rf /mnt/postgresql || :
 [ -d docker-data ] || mkdir docker-data
-for sub in media static postgresql; do
+for sub in media postgresql; do
     rm -rf docker-data/$sub
     mkdir docker-data/$sub
 done
@@ -42,17 +42,17 @@ compose exec db dropdb --force --if-exists --username=postgres dicominator
 echo "🫄 Creating a new empty dicominator database"
 compose exec db createdb --username=postgres --encoding=UTF8 --owner=postgres dicominator
 echo "📺 Collecting static assets from the application"
-compose exec portal /app/src/manage.py collectstatic
+compose exec app /app/bin/django-admin collectstatic --clear --no-input
 echo "🐣 Making missing database migrations"
-compose exec portal /app/src/manage.py makemigrations
+compose exec app /app/bin/django-admin makemigrations --no-input
 echo "🦆 Migrating"
-compose exec portal /app/src/manage.py migrate
+compose exec app /app/bin/django-admin migrate --no-input
 echo "🌸 Blooming initial content and settings"
-compose exec portal /app/src/manage.py dicominator_bloom
+compose exec app /app/bin/django-admin dicominator_bloom --hostname labcas-dev.jpl.nasa.gov
 echo "🍱 Populating main menus"
-compose exec portal /app/src/manage.py autopopulate_main_menus
+compose exec app /app/bin/django-admin autopopulate_main_menus
 echo "🗂️ Updating search index"
-compose exec portal /app/src/manage.py wagtail_update_index
+compose exec app /app/bin/django-admin wagtail_update_index
 
 echo "🎉 Done!"
 exit 0
