@@ -108,6 +108,15 @@ You can then launch the composition with
 
     task comp-up
 
+Populate with
+
+    docker compose --project-name dicominator --file docker/docker-compose.yaml exec db createdb --username=postgres --encoding=UTF8 --owner=postgres dicominator
+    task comp-app-exec -- /app/bin/django-admin migrate
+    task comp-app-exec -- /app/bin/django-admin dicominator_bloom
+    task comp-app-exec -- /app/bin/django-admin autopopulate_main_menus
+
+You can then visit https://localhost:9999/dicominator/ (ignore the certificate warning).
+
 
 ## 🔎 Additional Project Details
 
