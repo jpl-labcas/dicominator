@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<div class='container'>
+    <div class='row'>
+        <div class='col'>
+            <h1>{{ page.title }}</h1>
+            <div class='card mb-4'>
+                <div class='card-body'>
+                    <h5 class='card-title'>Patient Information</h5>
+                    <dl class='row'>
+                        <dt class='col-sm-3'>Patient ID</dt>
+                        <dd class='col-sm-9'>{{ page.patient_id }}</dd>
+                        
+                        {% if page.patient_sex %}
+                            <dt class='col-sm-3'>Sex</dt>
+                            <dd class='col-sm-9'>{{ page.patient_sex }}</dd>
+                        {% endif %}
+                        
+                        {% if page.patient_birth_date %}
+                            <dt class='col-sm-3'>Birth Date</dt>
+                            <dd class='col-sm-9'>{{ page.patient_birth_date }}</dd>
+                        {% endif %}
+                        
+                        {% if page.other_attributes %}
+                            {% for key, value in page.other_attributes.items %}
+                                <dt class='col-sm-3'>{{ key|title }}</dt>
+                                <dd class='col-sm-9'>{{ value }}</dd>
+                            {% endfor %}
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            {% if page.get_children %}
+                <h2>Studies</h2>
+                <div class='list-group'>
+                    {% for study in page.get_children %}
+                        <a href='{% pageurl study %}' class='list-group-item list-group-item-action'>
+                            <h5 class='mb-1'>{{ study.title }}</h5>
+                            <p class='mb-1'>Study UID: {{ study.specific.study_instance_uid }}</p>
+                            {% if study.specific.study_date %}
+                                <small>Study Date: {{ study.specific.study_date }}</small>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No studies found for this patient.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{# -*- HTML (Jinja) -*- #} 

@@ -7,6 +7,7 @@ from jpl.labcas.dicominator.theme.models import Footer
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from jpl.labcas.dicominator.content.models import HomePage
+from jpl.labcas.dicominator.tags.models import PatientIndex
 from wagtail.models import Site, Page
 from wagtail.rich_text import RichText
 from wagtailmenus.models import FlatMenu, FlatMenuItem
@@ -35,25 +36,43 @@ class Command(BaseCommand):
         site.save()
         old_root = site.root_page.specific
         if old_root.title == 'Dicominator':
-            return site, old_root
+            home_page = old_root
+        else:
+            mega_root = old_root.get_parent()
 
-        mega_root = old_root.get_parent()
+            self.stdout.write('Creating home page')
+            home_page = HomePage(
+                title='Dicominator', draft_title='📜 Dicominator', seo_title=self._seo_title,
+                search_description=self._description.strip(), live=True, slug=old_root.slug, path=old_root.path,
+                depth=old_root.depth, url_path=old_root.url_path,
+            )
+            home_page.body.append(('rich_text', RichText('<h1>The Dicominator</h1>')))
+            home_page.body.append(('rich_text', RichText("<p>A census, analyzer, catalog, anomaly detector, and utility for DICOM tags in the Early Detection Research Network.</p>")))
+            site.root_page = home_page
+            old_root.delete()
+            mega_root.save()
+            home_page.save()
+            site.save()
 
-        self.stdout.write('Creating home page')
-        home_page = HomePage(
-            title='Dicominator', draft_title='📜 Dicominator', seo_title=self._seo_title,
-            search_description=self._description.strip(), live=True, slug=old_root.slug, path=old_root.path,
-            depth=old_root.depth, url_path=old_root.url_path,
-        )
-        home_page.body.append(('rich_text', RichText('<h1>The Dicominator</h1>')))
-        home_page.body.append(('rich_text', RichText("<p>A census, analyzer, catalog, anomaly detector, and utility for DICOM tags in the Early Detection Research Network.</p>")))
-        site.root_page = home_page
-        old_root.delete()
-        mega_root.save()
-        home_page.save()
-        site.save()
+        # Create PatientIndex page if it doesn't exist
+        if not PatientIndex.objects.child_of(home_page).exists():
+            self.stdout.write('Creating PatientIndex page')
+            patient_index = PatientIndex(
+                title='Patients',
+                draft_title='📋 Patients',
+                slug='patients',
+                live=True,
+            )
+            home_page.add_child(instance=patient_index)
+            patient_index.save()
+            
+            # Add a link to the PatientIndex in the home page's body
+            home_page.body.append(('rich_text', RichText(
+                f'<p><a href="{patient_index.url}">Browse DICOM Patients</a></p>'
+            )))
+            home_page.save()
+
         return site, home_page
-        return site, None
 
     def create_footer_menus(self, site):
         FlatMenu.objects.all().delete()

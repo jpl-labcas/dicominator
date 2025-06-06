@@ -5,6 +5,7 @@ requires-python = '>=3.11'
 dependencies = [
     'jpl.labcas.dicominator.content',
     'jpl.labcas.dicominator.theme',
+    'jpl.labcas.dicominator.tags',
     'django             ~= 4.2.9',
     'psycopg2           == 2.9.6',  # Must match py3-psycopg2 in Dockerfile
     'wagtail            == 5.2.3',

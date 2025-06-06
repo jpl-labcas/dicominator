@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<div class='container'>
+    <div class='row'>
+        <div class='col'>
+            <h1>{{ page.title }}</h1>
+            <div class='card'>
+                <div class='card-body'>
+                    <h5 class='card-title'>DICOM Tag Information</h5>
+                    <dl class='row'>
+                        <dt class='col-sm-3'>Tag</dt>
+                        <dd class='col-sm-9'>{{ page.tag }}</dd>
+                        
+                        <dt class='col-sm-3'>Tag Name</dt>
+                        <dd class='col-sm-9'>{{ page.tag_name }}</dd>
+                        
+                        <dt class='col-sm-3'>Level</dt>
+                        <dd class='col-sm-9'>{{ page.get_level_display }}</dd>
+                        
+                        {% if page.vr %}
+                            <dt class='col-sm-3'>Value Representation</dt>
+                            <dd class='col-sm-9'>{{ page.vr }}</dd>
+                        {% endif %}
+                        
+                        {% if page.value %}
+                            <dt class='col-sm-3'>Value</dt>
+                            <dd class='col-sm-9'>{{ page.value }}</dd>
+                        {% endif %}
+                        
+                        <dt class='col-sm-3'>UID</dt>
+                        <dd class='col-sm-9'>{{ page.uid }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{# -*- HTML (Jinja) -*- #} 

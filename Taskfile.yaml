@@ -38,9 +38,8 @@ tasks:
             -   ".venv/bin/pip install --quiet --upgrade setuptools pip wheel build"
             -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.theme[dev]'"
             -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.content[dev]'"
+            -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.tags[dev]'"
             -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.policy[dev]'"
-            # -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.tags[dev]'"
-            # -   ".venv/bin/pip install --editable 'src/jpl.labcas.dicominator.theme[dev]'"
     manage:
         desc: "Local Django admin"
         summary: >

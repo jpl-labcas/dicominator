@@ -6,7 +6,7 @@ from .ldap import *  # noqa: F401, F403
 import dj_database_url, os
 import jpl.labcas.dicominator.content.settings as content_settings
 import jpl.labcas.dicominator.theme.settings as theme_settings
-# import jpl.labcas.dicominator.tags.settings as tags_settings
+import jpl.labcas.dicominator.tags.settings as tags_settings
 
 
 # Installed Applications
@@ -17,10 +17,10 @@ import jpl.labcas.dicominator.theme.settings as theme_settings
 # 🔗 https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 
 
-INSTALLED_APPS = content_settings.INSTALLED_APPS + [
+INSTALLED_APPS = content_settings.INSTALLED_APPS + tags_settings.INSTALLED_APPS + theme_settings.INSTALLED_APPS + [
     'jpl.labcas.dicominator.content',
     'jpl.labcas.dicominator.theme',
-    # 'jpl.labcas.dicominator.tags',
+    'jpl.labcas.dicominator.tags',
 
     # Menus
     'wagtail.contrib.modeladmin',
@@ -69,7 +69,7 @@ MIGRATION_MODULES = {
     'jpl.labcas.dicominator.policy': 'jpl.labcas.dicominator.policy.migrations',
     **content_settings.MIGRATION_MODULES,
     **theme_settings.MIGRATION_MODULES,
-    # **tags_settings.MIGRATION_MODULES,
+    **tags_settings.MIGRATION_MODULES,
 }
 
 

@@ -15,6 +15,9 @@ class HomePage(Page):
     template = 'jpl.labcas.dicominator.content/home-page.html'
     page_description = 'A web page specifically for the home of the site'
     max_count = 1
+    
+    # HomePage can have PatientIndex as a child
+    subpage_types = ['jpllabcasdicominatortags.PatientIndex']
 
     body = StreamField([
         ('rich_text', wagtail_core_blocks.RichTextBlock(
@@ -39,6 +42,9 @@ class FlexPage(Page):
 
     template = 'jpl.labcas.dicominator.content/flex-page.html'
     page_description = 'Generic web page with a sequence of block content'
+
+
+    subpage_types = ['jpllabcasdicominatortags.PatientIndex']
 
     body = StreamField([
         ('rich_text', wagtail_core_blocks.RichTextBlock(
