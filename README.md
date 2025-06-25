@@ -40,6 +40,12 @@ Finally populate the server with
     task manage command=dicominator_bloom
     task manage command=autopopulate_main_menus
 
+And load DICOM data with
+
+    task manage command=dicominator_load -- FOLDER [SLUG]
+
+where `FOLDER` is a top-level folder containing DICOM files. The extension `.dcm` of the file doesn't matter; it will try to read _every_ file as a DICOM file. The `SLUG` is the slug of the `PatientIndex` that should contain everything. By default it's `patients`.
+
 
 ### 🏃 Run the Serveer
 
@@ -116,7 +122,6 @@ Populate with
     task comp-app-exec -- /app/bin/django-admin autopopulate_main_menus
 
 You can then visit https://localhost:9999/dicominator/ (ignore the certificate warning).
-
 
 ## 🔎 Additional Project Details
 

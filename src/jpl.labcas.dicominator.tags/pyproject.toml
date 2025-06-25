@@ -4,7 +4,8 @@ dynamic = ['version']
 requires-python = '>=3.11'
 dependencies = [
     'django < 5',
-    'wagtail < 6'
+    'wagtail < 6',
+    'pydicom ~= 3.0.1'
 ]
 authors = [
     {name = 'Ashish Mahabal', email='aam@astro.caltech.edu'},
