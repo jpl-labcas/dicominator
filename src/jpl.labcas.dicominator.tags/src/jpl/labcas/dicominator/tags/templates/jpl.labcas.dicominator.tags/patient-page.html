@@ -33,10 +33,10 @@
                 </div>
             </div>
 
-            {% if page.get_children %}
+            {% if studies %}
                 <h2>Studies</h2>
                 <div class='list-group'>
-                    {% for study in page.get_children %}
+                    {% for study in studies %}
                         <a href='{% pageurl study %}' class='list-group-item list-group-item-action'>
                             <h5 class='mb-1'>{{ study.title }}</h5>
                             <p class='mb-1'>Study UID: {{ study.specific.study_instance_uid }}</p>

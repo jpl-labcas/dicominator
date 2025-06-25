@@ -15,6 +15,11 @@ class Patient(Page):
 
     template = 'jpl.labcas.dicominator.tags/patient-page.html'
 
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['studies'] = Study.objects.filter(patient=self).order_by('study_instance_uid')
+        return context
+
     # Only PatientIndex can be a parent of Patient
     parent_page_types = ['jpllabcasdicominatortags.PatientIndex']
     
@@ -30,6 +35,11 @@ class Patient(Page):
 
     def __str__(self):
         return self.patient_id
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['patient_id']),
+        ]
 
 
 class Study(Page):
@@ -190,7 +200,12 @@ class PatientIndex(Page):
     '''Index page for Patient pages.'''
     
     template = 'jpl.labcas.dicominator.tags/patient-index-page.html'
-    
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['patients'] = Patient.objects.all().order_by('patient_id')
+        return context
+
     # PatientIndex can be a child of HomePage or FlexPage
     parent_page_types = [
         'jpllabcasdicominatorcontent.HomePage',
