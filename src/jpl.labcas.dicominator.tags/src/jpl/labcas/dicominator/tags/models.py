@@ -17,7 +17,7 @@ class Patient(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        context['studies'] = Study.objects.filter(patient=self).order_by('study_instance_uid')
+        context['studies'] = Study.objects.child_of(self).order_by('study_instance_uid')
         return context
 
     # Only PatientIndex can be a parent of Patient
