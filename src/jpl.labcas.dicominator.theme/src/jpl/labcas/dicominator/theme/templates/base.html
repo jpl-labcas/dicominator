@@ -22,7 +22,7 @@
             {% endblock metadata_tags %}
         {% endspaceless %}
         {% if page.search_description %}
-        <meta name='description' content='{{ page.search_description }}' />
+        <meta name='description' content='{{page.search_description}}' />
         {% endif %}
         <meta name='viewport' content='width=device-width, initial-scale=1' />
 
@@ -55,6 +55,7 @@
     <body class='{% block body_class %}{% endblock body_class %}'>
         {% wagtailuserbar %}
         {% include 'includes/header.html' %}
+        {% include 'includes/breadcrumbs.html' %}
         {% block pre-main %}{% endblock %}
         <main id='content' class='container pt-2 mt-3 mb-4' role='main'>
             {% block content %}{% endblock %}
