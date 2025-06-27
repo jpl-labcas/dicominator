@@ -5,6 +5,7 @@
 from typing import Generator
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ValidationError
 from jpl.labcas.dicominator.content.models import HomePage
 from jpl.labcas.dicominator.tags.models import PatientIndex, Patient, Study, Series, Image, DicomTag, CancerLabel
 import argparse, os, pydicom
@@ -43,11 +44,8 @@ def _add_series(study: Study, dicom_obj: pydicom.FileDataset):
     if modality: series.modality = modality.value
     body_part_examined = dicom_obj.get(('0008', '0015'))
     if body_part_examined: series.body_part_examined = body_part_examined.value
-    try:
-        series_date = dicom_obj.get(('0008', '0021'))
-        if series_date: series.series_date = series_date.value
-    except Exception as ex:
-        pass
+    series_date = dicom_obj.get(('0008', '0021'))
+    if series_date and series_date.value.strip(): series.series_date = series_date.value
     manufacturer = dicom_obj.get(('0008', '0070'))
     if manufacturer: series.manufacturer = manufacturer.value
     software_versions = dicom_obj.get(('0018', '1020'))
@@ -70,7 +68,7 @@ def _add_study(patient: Patient, dicom_obj: pydicom.FileDataset):
 
     # Update the study with information from the DICOM object
     study_date = dicom_obj.get(('0008', '0020'))
-    if study_date: study.study_date = study_date.value
+    if study_date and study_date.value.strip(): study.study_date = study_date.value
     study_description = dicom_obj.get(('0008', '1030'))
     if study_description: study.study_description = study_description.value
     accession_number = dicom_obj.get(('0008', '0050'))
@@ -86,10 +84,7 @@ def _update_patient(patient: Patient, dicom_obj: pydicom.FileDataset):
     sex = dicom_obj.get(('0010', '0040'))
     if sex: patient.patient_sex = sex.value
     dob = dicom_obj.get(('0010', '0030'))
-    try:
-        if dob: patient.patient_birth_date = dob.value
-    except Exception as ex:
-        pass
+    if dob and dob.value.strip(): patient.patient_birth_date = dob.value
     patient.save()
     _add_study(patient, dicom_obj)
 
@@ -133,6 +128,9 @@ class Command(BaseCommand):
             except AttributeError as ex:
                 self.stderr.write(f'🤔 File {fn} was missing a required field: {ex}')
                 continue
+            except ValidationError as ex:
+                self.stderr.write(f'🤔 File {fn} had a value that failed validation: {ex}')
+                raise
             count += 1
             if count % 1000 == 0:
                 self.stdout.write(f'🚶 Processed {count} DICOM files')

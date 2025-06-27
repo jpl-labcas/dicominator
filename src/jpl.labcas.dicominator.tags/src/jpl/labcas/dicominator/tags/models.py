@@ -77,7 +77,7 @@ class Series(Page):
     body_part_examined = models.CharField(max_length=64, null=True, blank=True)
     series_date = models.DateField(null=True, blank=True)
     manufacturer = models.CharField(max_length=128, null=True, blank=True)
-    software_versions = models.CharField(max_length=128, null=True, blank=True)
+    software_versions = models.CharField(max_length=1024, null=True, blank=True)
 
     template = 'jpl.labcas.dicominator.tags/series-page.html'
 
