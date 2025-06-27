@@ -5,47 +5,47 @@
 <div class='container'>
     <div class='row'>
         <div class='col'>
-            <h1>{{ page.title }}</h1>
+            <h1>{{page.title}}</h1>
             <div class='card mb-4'>
                 <div class='card-body'>
                     <h5 class='card-title'>Series Information</h5>
                     <dl class='row'>
                         <dt class='col-sm-3'>Series UID</dt>
-                        <dd class='col-sm-9'>{{ page.series_instance_uid }}</dd>
+                        <dd class='col-sm-9'>{{page.series_instance_uid}}</dd>
                         
                         {% if page.series_number %}
                             <dt class='col-sm-3'>Series Number</dt>
-                            <dd class='col-sm-9'>{{ page.series_number }}</dd>
+                            <dd class='col-sm-9'>{{page.series_number}}</dd>
                         {% endif %}
                         
                         {% if page.series_description %}
                             <dt class='col-sm-3'>Description</dt>
-                            <dd class='col-sm-9'>{{ page.series_description }}</dd>
+                            <dd class='col-sm-9'>{{page.series_description}}</dd>
                         {% endif %}
                         
                         {% if page.modality %}
                             <dt class='col-sm-3'>Modality</dt>
-                            <dd class='col-sm-9'>{{ page.modality }}</dd>
+                            <dd class='col-sm-9'>{{page.modality}}</dd>
                         {% endif %}
                         
                         {% if page.body_part_examined %}
                             <dt class='col-sm-3'>Body Part</dt>
-                            <dd class='col-sm-9'>{{ page.body_part_examined }}</dd>
+                            <dd class='col-sm-9'>{{page.body_part_examined}}</dd>
                         {% endif %}
                         
                         {% if page.series_date %}
                             <dt class='col-sm-3'>Series Date</dt>
-                            <dd class='col-sm-9'>{{ page.series_date }}</dd>
+                            <dd class='col-sm-9'>{{page.series_date}}</dd>
                         {% endif %}
                         
                         {% if page.manufacturer %}
                             <dt class='col-sm-3'>Manufacturer</dt>
-                            <dd class='col-sm-9'>{{ page.manufacturer }}</dd>
+                            <dd class='col-sm-9'>{{page.manufacturer}}</dd>
                         {% endif %}
                         
                         {% if page.software_versions %}
                             <dt class='col-sm-3'>Software Versions</dt>
-                            <dd class='col-sm-9'>{{ page.software_versions }}</dd>
+                            <dd class='col-sm-9'>{{page.software_versions}}</dd>
                         {% endif %}
                     </dl>
                 </div>
@@ -56,10 +56,10 @@
                 <div class='list-group'>
                     {% for image in page.get_children %}
                         <a href='{% pageurl image %}' class='list-group-item list-group-item-action'>
-                            <h5 class='mb-1'>{{ image.title }}</h5>
-                            <p class='mb-1'>SOP UID: {{ image.specific.sop_instance_uid }}</p>
+                            <h5 class='mb-1'>{{image.title}}</h5>
+                            <p class='mb-1'>SOP UID: {{image.specific.sop_instance_uid}}</p>
                             {% if image.specific.image_number %}
-                                <small>Image Number: {{ image.specific.image_number }}</small>
+                                <small>Image Number: {{image.specific.image_number}}</small>
                             {% endif %}
                         </a>
                     {% endfor %}

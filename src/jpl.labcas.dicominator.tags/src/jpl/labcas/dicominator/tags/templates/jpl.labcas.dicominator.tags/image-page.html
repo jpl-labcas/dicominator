@@ -5,32 +5,32 @@
 <div class='container'>
     <div class='row'>
         <div class='col'>
-            <h1>{{ page.title }}</h1>
+            <h1>{{page.title}}</h1>
             <div class='card mb-4'>
                 <div class='card-body'>
                     <h5 class='card-title'>Image Information</h5>
                     <dl class='row'>
                         <dt class='col-sm-3'>SOP UID</dt>
-                        <dd class='col-sm-9'>{{ page.sop_instance_uid }}</dd>
+                        <dd class='col-sm-9'>{{page.sop_instance_uid}}</dd>
                         
                         {% if page.image_number %}
                             <dt class='col-sm-3'>Image Number</dt>
-                            <dd class='col-sm-9'>{{ page.image_number }}</dd>
+                            <dd class='col-sm-9'>{{page.image_number}}</dd>
                         {% endif %}
                         
                         {% if page.slice_thickness %}
                             <dt class='col-sm-3'>Slice Thickness</dt>
-                            <dd class='col-sm-9'>{{ page.slice_thickness }} mm</dd>
+                            <dd class='col-sm-9'>{{page.slice_thickness}} mm</dd>
                         {% endif %}
                         
                         {% if page.pixel_spacing %}
                             <dt class='col-sm-3'>Pixel Spacing</dt>
-                            <dd class='col-sm-9'>{{ page.pixel_spacing }}</dd>
+                            <dd class='col-sm-9'>{{page.pixel_spacing}}</dd>
                         {% endif %}
                         
                         {% if page.image_orientation %}
                             <dt class='col-sm-3'>Image Orientation</dt>
-                            <dd class='col-sm-9'>{{ page.image_orientation }}</dd>
+                            <dd class='col-sm-9'>{{page.image_orientation}}</dd>
                         {% endif %}
                     </dl>
                 </div>
@@ -41,10 +41,10 @@
                 <div class='list-group'>
                     {% for tag in page.get_children %}
                         <div class='list-group-item'>
-                            <h5 class='mb-1'>{{ tag.specific.tag_name }}</h5>
-                            <p class='mb-1'>Tag: {{ tag.specific.tag }}</p>
+                            <h5 class='mb-1'>{{tag.specific.tag_name}}</h5>
+                            <p class='mb-1'>Tag: {{tag.specific.tag}}</p>
                             {% if tag.specific.value %}
-                                <small>Value: {{ tag.specific.value }}</small>
+                                <small>Value: {{tag.specific.value}}</small>
                             {% endif %}
                         </div>
                     {% endfor %}

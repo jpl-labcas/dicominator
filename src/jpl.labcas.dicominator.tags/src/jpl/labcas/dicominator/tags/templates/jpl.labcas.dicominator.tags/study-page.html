@@ -5,32 +5,32 @@
 <div class='container'>
     <div class='row'>
         <div class='col'>
-            <h1>{{ page.title }}</h1>
+            <h1>{{page.title}}</h1>
             <div class='card mb-4'>
                 <div class='card-body'>
                     <h5 class='card-title'>Study Information</h5>
                     <dl class='row'>
                         <dt class='col-sm-3'>Study UID</dt>
-                        <dd class='col-sm-9'>{{ page.study_instance_uid }}</dd>
+                        <dd class='col-sm-9'>{{page.study_instance_uid}}</dd>
                         
                         {% if page.study_date %}
                             <dt class='col-sm-3'>Study Date</dt>
-                            <dd class='col-sm-9'>{{ page.study_date }}</dd>
+                            <dd class='col-sm-9'>{{page.study_date}}</dd>
                         {% endif %}
                         
                         {% if page.study_description %}
                             <dt class='col-sm-3'>Description</dt>
-                            <dd class='col-sm-9'>{{ page.study_description }}</dd>
+                            <dd class='col-sm-9'>{{page.study_description}}</dd>
                         {% endif %}
                         
                         {% if page.accession_number %}
                             <dt class='col-sm-3'>Accession Number</dt>
-                            <dd class='col-sm-9'>{{ page.accession_number }}</dd>
+                            <dd class='col-sm-9'>{{page.accession_number}}</dd>
                         {% endif %}
                         
                         {% if page.institution_name %}
                             <dt class='col-sm-3'>Institution</dt>
-                            <dd class='col-sm-9'>{{ page.institution_name }}</dd>
+                            <dd class='col-sm-9'>{{page.institution_name}}</dd>
                         {% endif %}
                     </dl>
                 </div>
@@ -41,10 +41,10 @@
                 <div class='list-group'>
                     {% for series in page.get_children %}
                         <a href='{% pageurl series %}' class='list-group-item list-group-item-action'>
-                            <h5 class='mb-1'>{{ series.title }}</h5>
-                            <p class='mb-1'>Series UID: {{ series.specific.series_instance_uid }}</p>
+                            <h5 class='mb-1'>{{series.title}}</h5>
+                            <p class='mb-1'>Series UID: {{series.specific.series_instance_uid}}</p>
                             {% if series.specific.modality %}
-                                <small>Modality: {{ series.specific.modality }}</small>
+                                <small>Modality: {{series.specific.modality}}</small>
                             {% endif %}
                         </a>
                     {% endfor %}
