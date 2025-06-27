@@ -43,8 +43,11 @@ def _add_series(study: Study, dicom_obj: pydicom.FileDataset):
     if modality: series.modality = modality.value
     body_part_examined = dicom_obj.get(('0008', '0015'))
     if body_part_examined: series.body_part_examined = body_part_examined.value
-    series_date = dicom_obj.get(('0008', '0021'))
-    if series_date: series.series_date = series_date.value
+    try:
+        series_date = dicom_obj.get(('0008', '0021'))
+        if series_date: series.series_date = series_date.value
+    except Exception as ex:
+        pass
     manufacturer = dicom_obj.get(('0008', '0070'))
     if manufacturer: series.manufacturer = manufacturer.value
     software_versions = dicom_obj.get(('0018', '1020'))
@@ -83,7 +86,10 @@ def _update_patient(patient: Patient, dicom_obj: pydicom.FileDataset):
     sex = dicom_obj.get(('0010', '0040'))
     if sex: patient.patient_sex = sex.value
     dob = dicom_obj.get(('0010', '0030'))
-    if dob: patient.patient_birth_date = dob.value
+    try:
+        if dob: patient.patient_birth_date = dob.value
+    except Exception as ex:
+        pass
     patient.save()
     _add_study(patient, dicom_obj)
 
