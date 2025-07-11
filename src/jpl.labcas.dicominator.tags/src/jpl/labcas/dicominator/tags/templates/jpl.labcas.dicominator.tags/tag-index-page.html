@@ -7,6 +7,13 @@
         <div class='col'>
             <h1>{{page.title}}</h1>
 
+            <dl class='row'>
+                <dt class='col-sm-2'>Files surveyed:</dt>
+                <dd class='col-sm-10'>{{surveyed_files|intcomma}}</dd>
+                <dt class='col-sm-2'>Unique tags:</dt>
+                <dd class='col-sm-10'>{{tags.count|intcomma}}</dd>
+            </dl>
+
             {% if tags %}
                 <table class='table table-striped'>
                     <thead>
