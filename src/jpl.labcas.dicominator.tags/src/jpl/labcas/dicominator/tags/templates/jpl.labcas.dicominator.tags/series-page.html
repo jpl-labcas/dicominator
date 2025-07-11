@@ -51,10 +51,10 @@
                 </div>
             </div>
 
-            {% if page.get_children %}
+            {% if images %}
                 <h2>Images</h2>
                 <div class='list-group'>
-                    {% for image in page.get_children %}
+                    {% for image in images %}
                         <a href='{% pageurl image %}' class='list-group-item list-group-item-action'>
                             <h5 class='mb-1'>{{image.title}}</h5>
                             <p class='mb-1'>SOP UID: {{image.specific.sop_instance_uid}}</p>
@@ -66,6 +66,22 @@
                 </div>
             {% else %}
                 <p>No images found for this series.</p>
+            {% endif %}
+
+            {% if dicom_tags %}
+                <h2>DICOM Tags</h2>
+                <div class='list-group'>
+                    {% for t in dicom_tags %}
+                        <a href='{% pageurl t %}' class='list-group-item list-group-item-action'>
+                            <h5 class='mb-1'>{{t.title}}</h5>
+                            <p class='mb-1'>Tag Name: {{t.tag_name}}</p>
+                            <p class='mb-1'>VR: {{t.vr}}</p>
+                            <p class='mb-1'>Value: {{t.value}}</p>
+                        </a>
+                    {% endfor %}    
+                </div>
+            {% else %}
+                <p>No DICOM tags found for this series.</p>
             {% endif %}
         </div>
     </div>

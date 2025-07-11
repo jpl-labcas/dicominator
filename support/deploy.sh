@@ -53,8 +53,10 @@ echo "🍱 Populating main menus"
 compose exec app /app/bin/django-admin autopopulate_main_menus
 echo "🔬 Loading DICOM data"
 compose exec app /app/bin/django-admin dicominator_load /mnt/data/Sample_Mammography_Reference_Set
-compose exec app /app/bin/django-admin dicominator_load /mnt/data/Prostate_MRI/Images_Site_ER13y8kBMpUKA
-compose exec app /app/bin/django-admin dicominator_load /mnt/data/Prostate_MRI/Images_Site_uDUsCV9ikmtw
+compose exec app /app/bin/django-admin dicominator_load /mnt/data/Prostate_MRI/Images_Site_kMBCjAelMw4Dw
+# compose exec app /app/bin/django-admin dicominator_load /mnt/data/Prostate_MRI/Images_Site_ER13y8kBMpUKA
+# compose exec app /app/bin/django-admin dicominator_load /mnt/data/Prostate_MRI/Images_Site_uDUsCV9ikmtw
+compose exec app /app/bin/django-admin scan_tag_frequencies /mnt/data/Prostate_MRI
 
 echo "🗂️ Updating search index"
 compose exec app /app/bin/django-admin wagtail_update_index

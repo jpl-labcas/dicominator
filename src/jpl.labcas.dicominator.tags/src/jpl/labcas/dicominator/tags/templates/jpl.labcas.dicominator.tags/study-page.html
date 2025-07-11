@@ -36,21 +36,37 @@
                 </div>
             </div>
 
-            {% if page.get_children %}
+            {% if series %}
                 <h2>Series</h2>
                 <div class='list-group'>
-                    {% for series in page.get_children %}
-                        <a href='{% pageurl series %}' class='list-group-item list-group-item-action'>
-                            <h5 class='mb-1'>{{series.title}}</h5>
-                            <p class='mb-1'>Series UID: {{series.specific.series_instance_uid}}</p>
-                            {% if series.specific.modality %}
-                                <small>Modality: {{series.specific.modality}}</small>
+                    {% for s in series %}
+                        <a href='{% pageurl s %}' class='list-group-item list-group-item-action'>
+                            <h5 class='mb-1'>{{s.title}}</h5>
+                            <p class='mb-1'>Series UID: {{s.specific.series_instance_uid}}</p>
+                            {% if s.specific.modality %}
+                                <small>Modality: {{s.specific.modality}}</small>
                             {% endif %}
                         </a>
                     {% endfor %}
                 </div>
             {% else %}
                 <p>No series found for this study.</p>
+            {% endif %}
+
+            {% if dicom_tags %}
+                <h2>DICOM Tags</h2>
+                <div class='list-group'>
+                    {% for t in dicom_tags %}
+                        <a href='{% pageurl t %}' class='list-group-item list-group-item-action'>
+                            <h5 class='mb-1'>{{t.title}}</h5>
+                            <p class='mb-1'>Tag Name: {{t.tag_name}}</p>
+                            <p class='mb-1'>VR: {{t.vr}}</p>
+                            <p class='mb-1'>Value: {{t.value}}</p>
+                        </a>
+                    {% endfor %}    
+                </div>
+            {% else %}
+                <p>No DICOM tags found for this study.</p>
             {% endif %}
         </div>
     </div>

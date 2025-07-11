@@ -7,7 +7,7 @@ from jpl.labcas.dicominator.theme.models import Footer
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from jpl.labcas.dicominator.content.models import HomePage
-from jpl.labcas.dicominator.tags.models import PatientIndex
+from jpl.labcas.dicominator.tags.models import PatientIndex, TagIndex
 from wagtail.models import Site, Page
 from wagtail.rich_text import RichText
 from wagtailmenus.models import FlatMenu, FlatMenuItem
@@ -72,7 +72,25 @@ class Command(BaseCommand):
             )))
             home_page.save()
 
-        return site, home_page
+        # Create TagIndex page if it doesn't exist
+        if not TagIndex.objects.child_of(home_page).exists():
+            self.stdout.write('Creating TagIndex page')
+            tag_index = TagIndex(
+                title='Tags',
+                draft_title='📋 Tags',
+                slug='tags',
+                live=True,
+            )
+            home_page.add_child(instance=tag_index)
+            tag_index.save()
+            
+            # Add a link to the TagIndex in the home page's body
+            home_page.body.append(('rich_text', RichText(
+                f'<p><a href="{tag_index.url}">View DICOM Tag Frequencies</a></p>'
+            )))
+            home_page.save()
+
+        return site, home_page  
 
     def create_footer_menus(self, site):
         FlatMenu.objects.all().delete()

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags humanize dicom_filters %}
+
+{% block content %}
+<div class='container'>
+    <div class='row'>
+        <div class='col'>
+            <h1>{{page.title}}</h1>
+
+            {% if tags %}
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th>Tag</th>
+                            <th>Keyword</th>
+                            <th>Name</th>
+                            <th>Frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tag in tags %}
+                            <tr>
+                                <td>({{tag.tag_group|hex_format}}, {{tag.tag_element|hex_format}})</td>
+                                <td><code>{{tag.keyword}}</code></td>
+                                <td>{{tag.name|default:'<em>«unknown»</em>'}}</td>
+                                <td>{{tag.frequency|intcomma}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No tags found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{# -*- HTML (Jinja) -*- #}

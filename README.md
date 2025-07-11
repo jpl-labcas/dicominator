@@ -46,6 +46,10 @@ And load DICOM data with
 
 where `FOLDER` is a top-level folder containing DICOM files. The extension `.dcm` of the file doesn't matter; it will try to read _every_ file as a DICOM file. The `SLUG` is the slug of the `PatientIndex` that should contain everything. By default it's `patients`.
 
+Add DICOM tag frequency data with a similar command:
+
+    task manage command=scan_tag_frequencies -- FOLDER
+
 
 ### 🏃 Run the Serveer
 

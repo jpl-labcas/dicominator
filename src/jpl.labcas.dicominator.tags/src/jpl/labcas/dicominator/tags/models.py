@@ -5,6 +5,27 @@
 from django.db import models
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel
+from pydicom.tag import Tag
+from ._types import TagClassification, CLASSIFICATION_TO_ENUM
+
+# Containment hierarchy:
+#
+# PatientIndex
+# ┃
+# ┗━━ Patient 
+#     ┃
+#     ┗━━ Study
+#         ┃
+#         ┣━━ Series
+#         ┃   ┃
+#         ┃   ┣━━ Image
+#         ┃   ┃   ┃
+#         ┃   ┃   ┗━━ DicomTag
+#         ┃   ┃
+#         ┃   ┗━━ DicomTag
+#         ┃
+#         ┗━━ DicomTag
+
 
 
 class Patient(Page):
@@ -51,6 +72,12 @@ class Study(Page):
 
     template = 'jpl.labcas.dicominator.tags/study-page.html'
 
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['series'] = Series.objects.child_of(self).order_by('title')
+        context['dicom_tags'] = DicomTag.objects.child_of(self).order_by('title')
+        return context
+
     # Only Patient can be a parent of Study
     parent_page_types = ['jpllabcasdicominatortags.Patient']
     
@@ -80,6 +107,12 @@ class Series(Page):
     software_versions = models.CharField(max_length=1024, null=True, blank=True)
 
     template = 'jpl.labcas.dicominator.tags/series-page.html'
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['images'] = Image.objects.child_of(self).order_by('title')
+        context['dicom_tags'] = DicomTag.objects.child_of(self).order_by('title')
+        return context
 
     # Only Study can be a parent of Series
     parent_page_types = ['jpllabcasdicominatortags.Study']
@@ -111,6 +144,11 @@ class Image(Page):
 
     template = 'jpl.labcas.dicominator.tags/image-page.html'
 
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['dicom_tags'] = DicomTag.objects.child_of(self).order_by('title')
+        return context
+
     # Only Series can be a parent of Image
     parent_page_types = ['jpllabcasdicominatortags.Series']
     
@@ -130,15 +168,8 @@ class Image(Page):
 
 
 class DicomTag(Page):
-    LEVEL_CHOICES = [
-        ('study', 'Study'),
-        ('series', 'Series'),
-        ('instance', 'Instance'),
-    ]
-
-    uid = models.CharField(max_length=128)  # Referencing Study, Series, or SOPInstanceUID
-    level = models.CharField(max_length=16, choices=LEVEL_CHOICES)
-    tag = models.CharField(max_length=16)  # e.g. (0010,0010)
+    # Use "title" (from class `Page`) for the tag name
+    level = models.IntegerField(choices=[(i.value, i.name) for i in TagClassification])
     tag_name = models.CharField(max_length=128)
     vr = models.CharField(max_length=4, null=True, blank=True)  # Value Representation
     value = models.TextField(null=True, blank=True)
@@ -156,9 +187,7 @@ class DicomTag(Page):
     subpage_types = []
 
     content_panels = Page.content_panels + [
-        FieldPanel('uid'),
         FieldPanel('level'),
-        FieldPanel('tag'),
         FieldPanel('tag_name'),
         FieldPanel('vr'),
         FieldPanel('value'),
@@ -214,3 +243,58 @@ class PatientIndex(Page):
     
     # PatientIndex can have Patient pages as children
     subpage_types = ['jpllabcasdicominatortags.Patient']
+
+
+class SurveyedFile(models.Model):
+    '''Model that tracks a file that has been surveyed for tag frequency.
+    
+    In the future we may want a last_modified field in case these files change—but this
+    is rare in LabCAS.
+    '''
+
+    file_path = models.CharField(max_length=2048, help_text='Path to the file', null=False, blank=False)
+
+    def __str__(self):
+        return self.file_path
+
+    class Meta:
+        verbose_name = 'Surveyed File'
+        verbose_name_plural = 'Surveyed Files'
+        indexes = [models.Index(fields=['file_path'])]
+
+
+class TagFrequency(models.Model):
+    '''Model that tracks the frequency of a tag.'''
+    
+    keyword = models.CharField(max_length=64, help_text='Keyword for the tag', null=False, blank=False)
+    name = models.CharField(max_length=200, help_text='Human-readable name of the tag', null=False, blank=True)
+    tag_group = models.PositiveIntegerField(default=0, help_text='Group number for the tag')
+    tag_element = models.PositiveIntegerField(default=0, help_text='Element number for the tag')
+    frequency = models.BigIntegerField(default=0, help_text='Number of times this tag has been seen')
+
+    @property
+    def tag(self):
+        return Tag((self.tag_group, self.tag_element))
+
+    def __str__(self):
+        return f'{self.keyword} ({self.frequency})'
+
+    class Meta:
+        verbose_name = 'DICOM Tag Frequency'
+        verbose_name_plural = 'DICOM Tag Frequencies'
+        unique_together = ('tag_group', 'tag_element')
+        indexes = [
+            models.Index(fields=['keyword']),
+            models.Index(fields=['frequency']),
+        ]
+
+
+class TagIndex(Page):
+    '''Index page for tags that we've seen while scanning DICOM files.'''
+    
+    template = 'jpl.labcas.dicominator.tags/tag-index-page.html'
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['tags'] = TagFrequency.objects.all().order_by('-frequency')
+        return context

@@ -6,9 +6,47 @@ from typing import Generator
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ValidationError
+from wagtail.models import Page
 from jpl.labcas.dicominator.content.models import HomePage
 from jpl.labcas.dicominator.tags.models import PatientIndex, Patient, Study, Series, Image, DicomTag, CancerLabel
-import argparse, os, pydicom
+from jpl.labcas.dicominator.tags._types import TagClassification, CLASSIFICATION_TO_ENUM
+from pydicom.tag import Tag
+from django.utils.text import slugify
+import argparse, os, pydicom, importlib.resources, csv, collections
+
+classified_tags = collections.defaultdict(set)
+
+
+# Still need to add multiprocessing because this is painfully slow
+
+
+
+def _add_tags(dicom_obj: pydicom.FileDataset, obj: Page, level: TagClassification):
+    '''Adds DicomTags to the given `obj`.'''
+
+    # Disabling this for now because it's too slow
+    return    
+
+    for tag in classified_tags[level]:
+        tag_id = str(tag)
+        dicom_tag = DicomTag.objects.filter(title=tag_id).child_of(obj).first()
+
+        # No DicomTag? Create a new one
+        if dicom_tag is None:
+            dicom_tag = DicomTag(
+                title=tag_id, level=level.value, vr=dicom_obj.get(tag).VR, value=dicom_obj.get(tag).value,
+                tag_name=dicom_obj.get(tag).name
+            )
+            obj.add_child(instance=dicom_tag)
+            return
+
+        # Otherwise update the existing tag
+        #
+        # AI says "this is a hack to get the VR and value from the DICOM object" for some reason
+        dicom_tag.level = level.value
+        dicom_tag.vr = dicom_obj.get(tag).VR
+        dicom_tag.value = dicom_obj.get(tag).value
+        dicom_tag.save()
 
 
 def _add_image(series: Series, dicom_obj: pydicom.FileDataset):
@@ -28,13 +66,17 @@ def _add_image(series: Series, dicom_obj: pydicom.FileDataset):
     if image_orientation:
         image.image_orientation = ', '.join(f'{v:.2f}' for v in image_orientation.value)
     image.save()
+    _add_tags(dicom_obj, image, TagClassification.IMAGE)
 
 
 def _add_series(study: Study, dicom_obj: pydicom.FileDataset):
     '''Adds a series to the study.'''
     series = Series.objects.filter(series_instance_uid=dicom_obj.SeriesInstanceUID).first()
     if series is None:
-        series = Series(series_instance_uid=dicom_obj.SeriesInstanceUID, title=dicom_obj.SeriesInstanceUID)
+        series = Series(
+            series_instance_uid=dicom_obj.SeriesInstanceUID, title=dicom_obj.SeriesInstanceUID,
+            slug=slugify(dicom_obj.SeriesInstanceUID)
+        )
         study.add_child(instance=series)
     series_number = dicom_obj.get(('0020', '0011'))
     if series_number: series.series_number = series_number.value
@@ -54,8 +96,9 @@ def _add_series(study: Study, dicom_obj: pydicom.FileDataset):
             series.software_versions = ', '.join(software_versions.value)
         else:
             series.software_versions = software_versions.value
-    _add_image(series, dicom_obj)
     series.save()
+    _add_tags(dicom_obj, series, TagClassification.SERIES)
+    _add_image(series, dicom_obj)
 
 
 def _add_study(patient: Patient, dicom_obj: pydicom.FileDataset):
@@ -76,6 +119,7 @@ def _add_study(patient: Patient, dicom_obj: pydicom.FileDataset):
     institution_name = dicom_obj.get(('0008', '0070'))
     if institution_name: study.institution_name = institution_name.value
     study.save()
+    _add_tags(dicom_obj, study, TagClassification.STUDY)
     _add_series(study, dicom_obj)
 
 
@@ -137,6 +181,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write('Loading DICOM files into the Dicominator')
+
+        global classified_tags
+        count = 0
+        with importlib.resources.path(__package__, 'tags.csv') as path:
+            with open(path, 'r') as io:
+                reader = csv.reader(io)
+                for tag_id, tag_name, classification in reader:
+                    if tag_id == 'Tag': continue
+                    count += 1
+                    classification = CLASSIFICATION_TO_ENUM[classification]
+                    group, element = (int(part, 16) for part in tag_id.split(','))
+                    classified_tags[classification].add(Tag((group, element)))
+        self.stdout.write(f'🚶 Loaded {count} DICOM tags from `tags.csv`')
 
         try:
             settings.WAGTAILREDIRECTS_AUTO_CREATE = False

@@ -36,10 +36,10 @@
                 </div>
             </div>
 
-            {% if page.get_children %}
+            {% if dicom_tags %}
                 <h2>DICOM Tags</h2>
                 <div class='list-group'>
-                    {% for tag in page.get_children %}
+                    {% for tag in dicom_tags %}
                         <div class='list-group-item'>
                             <h5 class='mb-1'>{{tag.specific.tag_name}}</h5>
                             <p class='mb-1'>Tag: {{tag.specific.tag}}</p>
