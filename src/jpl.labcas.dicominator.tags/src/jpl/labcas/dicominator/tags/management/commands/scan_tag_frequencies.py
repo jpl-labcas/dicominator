@@ -19,13 +19,15 @@ def top_level_elements(ds: pydicom.FileDataset) -> Generator[pydicom.DataElement
 def file_consumer(queue: Queue):
     import django
     django.setup()
-    from django.db import close_old_connections, transaction, IntegrityError
+    from django.db import connections, close_old_connections, transaction, IntegrityError
     from django.db.models import F
     from jpl.labcas.dicominator.tags.models import TagFrequency, SurveyedFile
 
     close_old_connections()
-    local_counter = Counter()
+    for conn in connections.all():
+        conn.close()
 
+    local_counter = Counter()
     while True:
         path = queue.get()
         if path is None: break
@@ -44,7 +46,7 @@ def file_consumer(queue: Queue):
             local_counter[elem.tag] += 1
 
         # No race here because each worker gets its own set of files to process
-        SurveyedFile.objects.create(file_path=path)
+        SurveyedFile.objects.get_or_create(file_path=path)
 
     with transaction.atomic():
         for tag, count in local_counter.items():

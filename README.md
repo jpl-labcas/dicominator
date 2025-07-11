@@ -51,7 +51,7 @@ Add DICOM tag frequency data with a similar command:
     task manage command=scan_tag_frequencies -- FOLDER
 
 
-### 🏃 Run the Serveer
+### 🏃 Run the Server
 
 To start the server, run
 
@@ -124,6 +124,8 @@ Populate with
     task comp-app-exec -- /app/bin/django-admin migrate
     task comp-app-exec -- /app/bin/django-admin dicominator_bloom
     task comp-app-exec -- /app/bin/django-admin autopopulate_main_menus
+    task comp-app-exec -- /app/bin/django-admin scan_tag_frequencies /mnt/data
+    task comp-app-exec -- /app/bin/django-admin dicominator_load /mnt/data
 
 You can then visit https://localhost:9999/dicominator/ (ignore the certificate warning).
 

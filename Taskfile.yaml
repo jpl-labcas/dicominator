@@ -8,6 +8,7 @@
 env:
     DATABASE_URL: "postgresql://:@/dicominator"
     DATA_DIR: "{{.HOME}}/dockerdata/dicominator"
+    LABCAS_DATA_DIR: "{{.HOME}}/labcas-data"
     LDAP_BIND_PASSWORD: "{{.edrn_service_password}}"
     LDAP_URI: "ldaps://localhost:1636"
     port: 6468

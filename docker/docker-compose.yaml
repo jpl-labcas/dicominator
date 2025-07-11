@@ -165,7 +165,7 @@ volumes:
         driver: local
         driver_opts:
             type: none
-            device: /labcas-data
+            device: ${LABCAS_DATA_DIR:-/labcas-data}
             o: bind
         labels:
             org.label-schema.name: DICOM data volume
