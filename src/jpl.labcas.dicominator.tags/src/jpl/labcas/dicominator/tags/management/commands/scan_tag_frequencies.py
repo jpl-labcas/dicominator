@@ -50,7 +50,12 @@ def file_consumer(queue: Queue):
 
     with transaction.atomic():
         for tag, count in local_counter.items():
-            keyword, name = keyword_for_tag(tag) or '«unknown»', dictionary_description(tag) or '«unknown»'
+            try:
+                keyword, name = keyword_for_tag(tag) or '«unknown»', dictionary_description(tag) or '«unknown»'
+            except KeyError:
+                print(f'🤷 Cannot find keyword or description for {tag}', file=sys.stderr)
+                continue
+
             rows_updated = TagFrequency.objects.filter(tag_group=tag.group, tag_element=tag.element).update(
                 frequency=F('frequency') + count
             )

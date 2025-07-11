@@ -51,7 +51,7 @@ services:
         volumes:
             -   media:/app/media
             -   static:/app/static
-            -   labcas_data_vol:/mnt/data
+            -   labcas_data_vol:/labcas-data
         networks:
             -   mainbus
         environment:
@@ -168,7 +168,7 @@ volumes:
             device: ${LABCAS_DATA_DIR:-/labcas-data}
             o: bind
         labels:
-            org.label-schema.name: DICOM data volume
+            org.label-schema.name: LabCAS data volume
 
 
 ...
