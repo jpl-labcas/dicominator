@@ -7,13 +7,11 @@ from collections import Counter
 from multiprocessing import Queue, Process, cpu_count
 from pydicom.errors import InvalidDicomError
 from pydicom.datadict import keyword_for_tag, dictionary_description
-from typing import Generator
+from jpl.labcas.dicominator.tags.templatetags.tag_handling import top_level_data_elements
 import argparse, os, pydicom, sys
 
 
-def top_level_elements(ds: pydicom.FileDataset) -> Generator[pydicom.DataElement, None, None]:
-    for elem in ds: yield elem
-    # This avoids recursing into subsequences
+
 
 
 def file_consumer(queue: Queue):
@@ -40,7 +38,7 @@ def file_consumer(queue: Queue):
         except InvalidDicomError as ex:
             print(f'🤷 Cannot load {path} as a DICOM file, skipping ({ex})', file=sys.stderr)
             continue
-        for elem in top_level_elements(ds):
+        for elem in top_level_data_elements(ds):
             # Skip sequences; we want only top-level element scalars and private tags
             if elem.VR == 'SQ' or elem.tag.is_private or elem.tag.is_private_creator: continue
             local_counter[elem.tag] += 1

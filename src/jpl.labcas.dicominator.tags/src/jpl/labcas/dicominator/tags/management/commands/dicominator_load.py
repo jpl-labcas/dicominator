@@ -12,9 +12,10 @@ from jpl.labcas.dicominator.tags.models import PatientIndex, Patient, Study, Ser
 from jpl.labcas.dicominator.tags._types import TagClassification, CLASSIFICATION_TO_ENUM
 from pydicom.tag import Tag
 from django.utils.text import slugify
+from jpl.labcas.dicominator.tags.templatetags.tag_handling import top_level_data_elements
 import argparse, os, pydicom, importlib.resources, csv, collections
 
-classified_tags = collections.defaultdict(set)
+CLASSIFIED_TAGS = collections.defaultdict(set)
 
 
 # Still need to add multiprocessing because this is painfully slow
@@ -24,28 +25,30 @@ classified_tags = collections.defaultdict(set)
 def _add_tags(dicom_obj: pydicom.FileDataset, obj: Page, level: TagClassification):
     '''Adds DicomTags to the given `obj`.'''
 
-    # Disabling this for now because it's too slow
-    return    
+    tags_at_this_level = CLASSIFIED_TAGS[level]
 
-    for tag in classified_tags[level]:
-        tag_id = str(tag)
+    for tag in top_level_data_elements(dicom_obj):
+        if tag.tag not in tags_at_this_level: continue
+
+        tag_id = str(tag.tag)
         dicom_tag = DicomTag.objects.filter(title=tag_id).child_of(obj).first()
+
+        vr = tag.VR if tag.VR else 'UN'
+        value = tag.value if tag.value else '«unknown»'
+        name = tag.name if tag.name else '«unknown»'
 
         # No DicomTag? Create a new one
         if dicom_tag is None:
             dicom_tag = DicomTag(
-                title=tag_id, level=level.value, vr=dicom_obj.get(tag).VR, value=dicom_obj.get(tag).value,
-                tag_name=dicom_obj.get(tag).name
+                title=tag_id, level=level.value, vr=vr, value=value, tag_name=name
             )
             obj.add_child(instance=dicom_tag)
-            return
-
-        # Otherwise update the existing tag
-        #
-        # AI says "this is a hack to get the VR and value from the DICOM object" for some reason
-        dicom_tag.level = level.value
-        dicom_tag.vr = dicom_obj.get(tag).VR
-        dicom_tag.value = dicom_obj.get(tag).value
+        else:
+            # Otherwise update the existing tag
+            dicom_tag.level = level.value
+            dicom_tag.vr = vr
+            dicom_tag.value = value
+            dicom_tag.tag_name = name
         dicom_tag.save()
 
 
@@ -148,7 +151,7 @@ class Command(BaseCommand):
         for parent, b, files in os.walk(folder):
             for fn in files:
                 try:
-                    yield fn, pydicom.dcmread(os.path.join(parent, fn))
+                    yield fn, pydicom.dcmread(os.path.join(parent, fn), stop_before_pixels=True)
                 except Exception as ex:
                     self.stderr.write(f'🤷 Cannot load {fn} as a DICOM file, skipping ({ex})')
 
@@ -182,7 +185,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Loading DICOM files into the Dicominator')
 
-        global classified_tags
+        global CLASSIFIED_TAGS
         count = 0
         with importlib.resources.path(__package__, 'tags.csv') as path:
             with open(path, 'r') as io:
@@ -192,7 +195,7 @@ class Command(BaseCommand):
                     count += 1
                     classification = CLASSIFICATION_TO_ENUM[classification]
                     group, element = (int(part, 16) for part in tag_id.split(','))
-                    classified_tags[classification].add(Tag((group, element)))
+                    CLASSIFIED_TAGS[classification].add(Tag((group, element)))
         self.stdout.write(f'🚶 Loaded {count} DICOM tags from `tags.csv`')
 
         try:
