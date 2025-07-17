@@ -1,0 +1,27 @@
+{% load dicom_tag_tags %}
+{% if dicom_tags %}
+    <h2 class='mt-3'>DICOM Tags</h2>
+    <table class='table table-striped'>
+        <thead>
+            <tr>
+                <th>Tag</th>
+                <th>Name</th>
+                <th>VR</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tag in dicom_tags %}
+                <tr>
+                    <td><code>{{tag.title}}</code></td>
+                    <td>{{tag.tag_name}}</td>
+                    <td><code>{{tag.vr}}</code></td>
+                    <td>{{tag.value}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No DICOM tags found for this object.</p>
+{% endif %}
+{# -*- HTML (Jinja) -*- #}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags dicom_tag_tags %}
 
 {% block content %}
 <div class='container'>
@@ -53,21 +53,7 @@
                 <p>No series found for this study.</p>
             {% endif %}
 
-            {% if dicom_tags %}
-                <h2>DICOM Tags</h2>
-                <div class='list-group'>
-                    {% for t in dicom_tags %}
-                        <a href='{% pageurl t %}' class='list-group-item list-group-item-action'>
-                            <h5 class='mb-1'>{{t.title}}</h5>
-                            <p class='mb-1'>Tag Name: {{t.tag_name}}</p>
-                            <p class='mb-1'>VR: {{t.vr}}</p>
-                            <p class='mb-1'>Value: {{t.value}}</p>
-                        </a>
-                    {% endfor %}    
-                </div>
-            {% else %}
-                <p>No DICOM tags found for this study.</p>
-            {% endif %}
+            {% dicom_tags_table dicom_tags %}
         </div>
     </div>
 </div>
