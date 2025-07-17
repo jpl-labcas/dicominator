@@ -194,7 +194,7 @@ class DicomTag(Page):
     ]
 
     def __str__(self):
-        return f"{self.level.upper()}:{self.tag_name} = {self.value}"
+        return f'{self.title} ({self.tag_name}) = {self.value}'
 
 
 class CancerLabel(Page):
