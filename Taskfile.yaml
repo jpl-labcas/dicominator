@@ -28,7 +28,10 @@ tasks:
         desc: "Python virtual environment"
         summary: "Creates the Python venv running `pip install` on each src component."
         sources:
-            -   Taskfile.yaml
+            -   src/jpl.labcas.dicominator.policy/pyproject.toml
+            -   src/jpl.labcas.dicominator.content/pyproject.toml
+            -   src/jpl.labcas.dicominator.tags/pyproject.toml
+            -   src/jpl.labcas.dicominator.theme/pyproject.toml
         generates:
             -   .venv/**
         cmds:

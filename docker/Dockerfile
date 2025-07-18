@@ -39,7 +39,7 @@ RUN : &&\
     /usr/sbin/adduser -S -D -h /dicom -G dicom -u $user_id -g 'dicom user' dicom &&\
     : Separate installations into a separate "virtual" package for easy removal at the end &&\
     build_deps="automake bzip2-dev cyrus-sasl-dev git g++ gcc libffi-dev libjpeg-turbo-dev libwebp-dev libxml2-dev libxslt-dev make musl-dev openjpeg-dev openldap-dev openssl-dev pcre-dev python3-dev postgresql-dev su-exec tiff-dev zlib-dev py3-pip" &&\
-    run_deps="curl krb5-libs libgcc libjpeg-turbo libldap libpq libsasl libstdc++ libwebp libxml2 libxslt netcat-openbsd openjpeg python3 rsync tiff tidyhtml py3-psycopg2" &&\
+    run_deps="curl krb5-libs libgcc libjpeg-turbo libldap libpq libsasl libstdc++ libwebp libxml2 libxslt netcat-openbsd openjpeg python3 rsync tiff tidyhtml py3-psycopg" &&\
     /sbin/apk update --quiet &&\
     /sbin/apk add --no-progress --quiet --virtual build $build_deps &&\
     /sbin/apk add --no-progress --quiet $run_deps &&\
