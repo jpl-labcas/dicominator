@@ -11,9 +11,6 @@ from jpl.labcas.dicominator.tags.templatetags.tag_handling import top_level_data
 import argparse, os, pydicom, sys
 
 
-
-
-
 def file_consumer(queue: Queue):
     import django
     django.setup()
@@ -78,7 +75,7 @@ class Command(BaseCommand):
         parser.add_argument('folder', help='Folder containing DICOM files to load')
 
     def handle(self, *args, **options):
-        self.stdout.write('Loading DICOM files into the Dicominator')
+        self.stdout.write('Scanning tag frequencies in DICOM files')
         folder = options['folder']
         if not os.path.isdir(folder):
             self.stderr.write(f'💥 Folder {folder} does not exist')
