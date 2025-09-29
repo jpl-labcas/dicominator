@@ -51,7 +51,7 @@ services:
         volumes:
             -   media:/app/media
             -   static:/app/static
-            -   labcas_data_vol:/labcas-data
+            -   labcas_nfs:/labcas-data
         networks:
             -   mainbus
         environment:
@@ -170,6 +170,13 @@ volumes:
         labels:
             org.label-schema.name: LabCAS data volume
 
+    # LabCAS data but mounted through NFS
+    labcas_nfs:
+        driver: local
+        driver_opts:
+            type: "nfs"
+            o: "addr=137.79.133.4,nfsvers=3,proto=tcp,rw,timeo=600,retrans=2,hard,local_lock=none"
+            device: ":/edrn_data"
 
 ...
 
